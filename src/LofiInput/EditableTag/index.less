@@ -1,0 +1,16 @@
+.editable-tag {
+  padding: 0 2px;
+  margin: 0 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-block;
+  min-width: 76px;
+  &:empty::after {
+    content: attr(lofi-placeholder);
+    // color: #A1D786;
+  }
+  &::before {
+    content: attr(lofi-mention);
+    margin-right: 4px;
+  }
+}
