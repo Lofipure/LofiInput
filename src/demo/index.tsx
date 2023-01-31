@@ -10,6 +10,10 @@ export default () => {
       mode: 'editable',
       placeholder: '请输入常数',
     },
+    {
+      mentionChar: '@',
+      mode: 'selectable',
+    },
   ];
 
   return <LofiInput mentionList={mentionList} />;

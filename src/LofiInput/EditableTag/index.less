@@ -3,14 +3,18 @@
   margin: 0 2px;
   border-radius: 4px;
   cursor: pointer;
-  display: inline-block;
-  min-width: 76px;
+
   &:empty::after {
     content: attr(lofi-placeholder);
-    // color: #A1D786;
+    opacity: 0.5;
   }
+
   &::before {
     content: attr(lofi-mention);
-    margin-right: 4px;
+    padding-right: 4px;
+  }
+
+  &[contenteditable='true'] {
+    outline: transparent !important;
   }
 }

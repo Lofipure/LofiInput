@@ -6,26 +6,49 @@ import './index.less';
 interface IEditableTagProps {
   value?: string;
   mentionAtom: IMentionAtom;
-  onChange?: (value: string) => void;
+  showMentionChar?: boolean;
+  onChange?: () => void;
+  onEdit?: () => void;
 }
 
-const EditableTag: FC<IEditableTagProps> = ({ mentionAtom, onChange }) => {
+const EditableTag: FC<IEditableTagProps> = ({
+  mentionAtom,
+  showMentionChar = false,
+  onEdit,
+  onChange,
+}) => {
   const { classname, mentionChar, placeholder } = mentionAtom;
   const [editable, setEditable] = useState<boolean>(false);
   const tagContainerRef = useRef<HTMLSpanElement>(null);
 
   function handleDblClick(this: HTMLSpanElement) {
     if (tagContainerRef.current) {
+      onEdit?.();
       setEditable(true);
-      onChange?.(tagContainerRef.current?.innerText);
+
+      const selectionObj = window.getSelection();
+      selectionObj?.removeAllRanges();
+      const rangeObj = document.createRange();
+      rangeObj?.selectNodeContents(this);
+      selectionObj?.addRange(rangeObj);
     }
   }
 
   const handleOutofTag = (ev: MouseEvent) => {
     if (!tagContainerRef.current) return;
-    const path = (ev as any)?.path as HTMLElement[];
+    const path = ev.composedPath();
     if (!path.includes(tagContainerRef.current)) {
       setEditable(false);
+      onChange?.();
+    }
+  };
+
+  const handleKeyPress = (ev: KeyboardEvent) => {
+    if (['Enter', 'Space'].includes(ev.code)) {
+      ev.preventDefault();
+      setEditable(false);
+      onChange?.();
+      return;
     }
   };
 
@@ -33,6 +56,7 @@ const EditableTag: FC<IEditableTagProps> = ({ mentionAtom, onChange }) => {
     const tagEle = tagContainerRef.current;
     if (tagEle) {
       tagEle.addEventListener('dblclick', handleDblClick);
+      tagEle.addEventListener('keypress', handleKeyPress);
       document.addEventListener('mousedown', handleOutofTag);
     }
   }, []);
@@ -42,11 +66,9 @@ const EditableTag: FC<IEditableTagProps> = ({ mentionAtom, onChange }) => {
       className={classNames('editable-tag', classname)}
       ref={tagContainerRef}
       contentEditable={editable}
-      lofi-mention={mentionChar}
+      lofi-mention={showMentionChar ? mentionChar : ''}
       lofi-placeholder={placeholder}
-    >
-      {/* {placeholder} */}
-    </span>
+    ></span>
   );
 };
 
