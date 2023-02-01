@@ -3,8 +3,12 @@
   padding: 4px;
   border: 1px solid #108ee9;
 
-  &:empty::before {
-    content: attr(lofi-placeholder);
+  &:empty::after {
+    content: attr(data-placeholder);
     color: #ccc;
   }
+}
+
+.lofi-input-wrap {
+  position: relative;
 }

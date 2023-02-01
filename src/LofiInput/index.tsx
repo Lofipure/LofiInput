@@ -12,43 +12,22 @@ import { handleKeyDown } from './utils';
 
 const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
   (props, ref) => {
-    const { classname, mentionList } = props;
+    const { classname, mentionList, placeholder, wrapClassname } = props;
     const [editable, setEditable] = useState<boolean>(true);
 
     const inputRef = useRef<HTMLDivElement>(null);
 
-    const handleTagEdit = () => {
-      setEditable(false);
-    };
-
-    const handleChange = () => {
-      setEditable(true);
+    const setLofiInputEditable = (editable: boolean) => {
+      setEditable(editable);
     };
 
     useEffect(() => {
       const inputEle = inputRef.current;
       if (!inputEle) return;
 
-      inputEle.addEventListener('keydown', function (ev) {
-        handleKeyDown.bind(
-          this,
-          ev,
-          mentionList,
-          handleTagEdit,
-          handleChange,
-        )();
-      });
-      return () => {
-        inputEle.removeEventListener('keydown', function (ev) {
-          handleKeyDown.bind(
-            this,
-            ev,
-            mentionList,
-            handleTagEdit,
-            handleChange,
-          )();
-        });
-      };
+      inputEle.addEventListener('keydown', (ev) =>
+        handleKeyDown(inputEle, ev, mentionList, setLofiInputEditable),
+      );
     }, []);
 
     useImperativeHandle(ref, () => ({
@@ -56,12 +35,14 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
     }));
 
     return (
-      <div
-        className={classnames(classname, 'lofi-input')}
-        ref={inputRef}
-        contentEditable={editable}
-        lofi-placeholder="测试 placeholder"
-      ></div>
+      <div className={classnames(wrapClassname, 'lofi-input-wrap')}>
+        <div
+          className={classnames(classname, 'lofi-input')}
+          ref={inputRef}
+          contentEditable={editable}
+          data-placeholder={placeholder}
+        ></div>
+      </div>
     );
   },
 );

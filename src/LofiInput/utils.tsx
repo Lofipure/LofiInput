@@ -4,47 +4,47 @@ import EditableTag from './EditableTag';
 import SelectableTag from './SelectableTag';
 import { IMentionAtom } from './types';
 
-export function renderEditableMentionTag(param: {
+export const renderEditableMentionTag = (param: {
   lofiInputEle: HTMLDivElement;
   mention: IMentionAtom;
-  handleTagEdit?: () => void;
-  handleChange?: () => void;
-}) {
-  const { lofiInputEle, mention, handleTagEdit, handleChange } = param;
+  setLofiInputEditable?: (editable: boolean) => void;
+}) => {
+  const { lofiInputEle, mention, setLofiInputEditable } = param;
   const depEle = document.createElement('span');
   render(
     <EditableTag
+      lofiInputEle={lofiInputEle}
       mentionAtom={mention}
-      showMentionChar
-      onEdit={handleTagEdit}
-      onChange={handleChange}
+      setLofiInputEditable={setLofiInputEditable}
     />,
     depEle,
   );
 
-  lofiInputEle.appendChild(depEle.childNodes[0]);
-}
+  const selectionObj = window.getSelection();
+  selectionObj?.getRangeAt(0).insertNode(depEle.childNodes[0]);
+};
 
-export function renderSelectableMentionTag(param: {
+export const renderSelectableMentionTag = (param: {
   lofiInputEle: HTMLDivElement;
   mention: IMentionAtom;
-  handleTagEdit?: () => void;
-  handleChange?: () => void;
-}) {
-  const { lofiInputEle, mention } = param;
+}) => {
+  const { mention, lofiInputEle } = param;
   const depEle = document.createElement('span');
-  render(<SelectableTag mentionAtom={mention} />, depEle);
+  render(
+    <SelectableTag mentionAtom={mention} lofiInputEle={lofiInputEle} />,
+    depEle,
+  );
 
-  lofiInputEle.appendChild(depEle.childNodes[0]);
-}
+  const selectionObj = window.getSelection();
+  selectionObj?.getRangeAt(0).insertNode(depEle.childNodes[0]);
+};
 
-export function handleKeyDown(
-  this: HTMLDivElement,
+export const handleKeyDown = (
+  lofiInputEle: HTMLDivElement,
   ev: KeyboardEvent,
   mentionList: IMentionAtom[],
-  handleTagEdit?: () => void,
-  handleChange?: () => void,
-) {
+  setLofiInputEditable: (editable: boolean) => void,
+) => {
   const { key } = ev;
   const mentionItem = mentionList?.find((item) => item.mentionChar === key);
 
@@ -52,20 +52,17 @@ export function handleKeyDown(
     ev.preventDefault();
     if (mentionItem.mode === 'editable') {
       renderEditableMentionTag({
-        lofiInputEle: this,
+        lofiInputEle,
         mention: mentionItem,
-        handleTagEdit,
-        handleChange,
+        setLofiInputEditable,
       });
     } else {
       renderSelectableMentionTag({
-        lofiInputEle: this,
+        lofiInputEle,
         mention: mentionItem,
-        handleTagEdit,
-        handleChange,
       });
     }
 
     return;
   }
-}
+};

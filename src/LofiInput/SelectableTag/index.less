@@ -1,3 +1,25 @@
 .selectable-tag {
+  padding: 0 2px;
+  margin: 0 2px;
+  border-radius: 4px;
   cursor: pointer;
+  user-select: none;
+  display: inline-block;
+  position: relative;
+
+  &:empty::after {
+    content: attr(data-placeholder);
+    opacity: 0.5;
+  }
+
+  &::before {
+    content: attr(data-mention);
+    padding-right: 4px;
+  }
+}
+
+.lofi-dropdown-container {
+  position: absolute;
+  top: 0;
+  z-index: 100;
 }
