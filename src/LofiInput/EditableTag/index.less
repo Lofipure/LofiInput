@@ -4,13 +4,15 @@
   border-radius: 4px;
   cursor: pointer;
   display: inline-block;
-  min-width: 76px;
+  user-select: auto;
+  user-select: auto;
+
   &:empty::after {
-    content: attr(lofi-placeholder);
-    // color: #A1D786;
+    content: attr(data-placeholder);
+    opacity: 0.5;
   }
-  &::before {
-    content: attr(lofi-mention);
-    margin-right: 4px;
+
+  &[contenteditable='true'] {
+    outline: transparent !important;
   }
 }

@@ -1,17 +1,14 @@
-.lofi-input[contenteditable='true'] {
+.lofi-input {
   outline: transparent;
   padding: 4px;
   border: 1px solid #108ee9;
-  &:empty::before {
-    content: attr(lofi-placeholder);
+
+  &:empty::after {
+    content: attr(data-placeholder);
     color: #ccc;
   }
 }
 
-// .lofi-input-tag {
-//   cursor: pointer;
-//   padding: 2px 4px;
-//   background-color: #108ee9;
-//   border-radius: 6px;
-//   color: #fff;
-// }
+.lofi-input-wrap {
+  position: relative;
+}
