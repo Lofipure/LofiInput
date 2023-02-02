@@ -2,10 +2,10 @@ import LofiInput, { IMentionAtom } from 'LofiInput';
 import React from 'react';
 import './index.less';
 
-const createOptions = (parentId: string) =>
-  new Array(4).fill(1).map((_, index) => ({
-    label: `[${parentId}]option_${index + 1}`,
-    value: index + 1 + parentId,
+const createOptions = (parentId?: string) =>
+  new Array(12).fill(1).map((_, index) => ({
+    label: `${parentId ? `[${parentId}]` : ''}option_${index + 1}`,
+    value: String(index + 1) + (parentId || ''),
   }));
 
 const options = createOptions('').map((item) => ({
@@ -28,7 +28,22 @@ export default () => {
     {
       mentionChar: '@',
       mode: 'selectable',
+      classname: 'search',
+      dataSource: {
+        type: 'select',
+        data: createOptions('Haha'),
+      },
+      searchable: true,
+    },
+    {
+      mentionChar: '#',
+      mode: 'selectable',
       classname: 'select',
+      dataSource: {
+        type: 'select',
+        data: createOptions('Haha'),
+      },
+      searchable: false,
     },
   ];
 

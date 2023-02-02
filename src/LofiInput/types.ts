@@ -1,6 +1,12 @@
 import { ReactNode } from 'react';
 
-// type SelectableTagSetValueType = (item: IDisplayAtom) => Promise<void>;
+export type MentionValueType = number | string;
+
+export interface IMentionDataSourceAtom {
+  label: string;
+  value: MentionValueType;
+  children?: IMentionDataSourceAtom[];
+}
 
 export type LofiInputValue = any;
 
@@ -23,11 +29,12 @@ export interface IMentionAtom {
 
   // * [selectable tag]
   searchable?: boolean;
-  onSearch?: (searchValue: string, list: IDisplayAtom[]) => IDisplayAtom[];
-  // renderDropdown?: (
-  //   setValue: SelectableTagSetValueType,
-  //   containerEle: HTMLElement,
-  // ) => JSX.Element;
+  dataSource?: {
+    type: 'select' | 'cascader';
+    data: Array<IMentionDataSourceAtom>;
+  };
+  focusedItemClassname?: string;
+  panelWrapClassname?: string;
 }
 
 export interface IEditableTagProps {
@@ -39,6 +46,7 @@ export interface IEditableTagProps {
 export interface ISelectableTagProps {
   mentionAtom: IMentionAtom;
   lofiInputEle: HTMLDivElement;
+  setLofiInputEditable?: (editable: boolean) => void;
 }
 
 export interface IDisplayAtom {

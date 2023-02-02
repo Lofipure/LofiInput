@@ -27,11 +27,16 @@ export const renderEditableMentionTag = (param: {
 export const renderSelectableMentionTag = (param: {
   lofiInputEle: HTMLDivElement;
   mention: IMentionAtom;
+  setLofiInputEditable?: (editable: boolean) => void;
 }) => {
-  const { mention, lofiInputEle } = param;
+  const { mention, lofiInputEle, setLofiInputEditable } = param;
   const depEle = document.createElement('span');
   render(
-    <SelectableTag mentionAtom={mention} lofiInputEle={lofiInputEle} />,
+    <SelectableTag
+      mentionAtom={mention}
+      lofiInputEle={lofiInputEle}
+      setLofiInputEditable={setLofiInputEditable}
+    />,
     depEle,
   );
 
@@ -60,6 +65,7 @@ export const handleKeyDown = (
       renderSelectableMentionTag({
         lofiInputEle,
         mention: mentionItem,
+        setLofiInputEditable,
       });
     }
 

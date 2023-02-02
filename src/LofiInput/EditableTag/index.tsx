@@ -20,6 +20,7 @@ const EditableTag: FC<IEditableTagProps> = ({
     setLofiInputEditable?.(false);
     setEditable(true);
 
+    // selection 选择当前 tag作为锚点
     const selectionObj = window.getSelection();
     selectionObj?.removeAllRanges();
     const rangeObj = document.createRange();
@@ -52,15 +53,19 @@ const EditableTag: FC<IEditableTagProps> = ({
       setEditable(false);
 
       setValue(tagContainerRef.current?.innerText);
+
+      // selection 选择 input元素作为锚点
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+
+      const range = document.createRange();
+      range.selectNodeContents(lofiInputEle);
+      range.collapse(false);
+
+      selection?.addRange(range);
+
       setTimeout(() => {
-        const selection = window.getSelection();
-        selection?.removeAllRanges();
-
-        const range = document.createRange();
-        range.selectNodeContents(lofiInputEle);
-        range.collapse(false);
-
-        selection?.addRange(range);
+        lofiInputEle.focus();
       });
       return;
     }
