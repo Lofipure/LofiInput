@@ -31,7 +31,7 @@ export default () => {
       classname: 'search',
       dataSource: {
         type: 'select',
-        data: createOptions('Haha'),
+        data: createOptions('search'),
       },
       searchable: true,
     },
@@ -41,7 +41,7 @@ export default () => {
       classname: 'select',
       dataSource: {
         type: 'select',
-        data: createOptions('Haha'),
+        data: createOptions('select'),
       },
       searchable: false,
     },
