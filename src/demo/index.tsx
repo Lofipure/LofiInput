@@ -33,6 +33,7 @@ export default () => {
         type: 'select',
         data: createOptions('search'),
       },
+      placeholder: '支持搜索',
       searchable: true,
     },
     {
@@ -43,9 +44,15 @@ export default () => {
         type: 'select',
         data: createOptions('select'),
       },
+      placeholder: '不支持搜索',
       searchable: false,
     },
   ];
 
-  return <LofiInput mentionList={mentionList} placeholder="请输入......" />;
+  return (
+    <LofiInput
+      mentionList={mentionList}
+      placeholder="请输入, @ - 支持搜索, # - 不支持搜索, $ - 输入常数"
+    />
+  );
 };
