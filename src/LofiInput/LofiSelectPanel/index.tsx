@@ -80,6 +80,31 @@ const LofiSelectPanel = forwardRef<
     initOptionSelect();
   };
 
+  const setFocusedOption = (currentItem: Element, option: Element) => {
+    currentItem.removeAttribute('aria-selected');
+    option.setAttribute('aria-selected', 'true');
+    if (focusedItemClassname) {
+      currentItem.classList.remove(focusedItemClassname);
+      option.classList.add(focusedItemClassname);
+    }
+    curSelectedValue.current = String(option.getAttribute('data-value') ?? '');
+  };
+
+  const handleListMouseMove = (ev: MouseEvent) => {
+    const listEle = listRef.current;
+    if (!listEle) return;
+
+    const currentItem = initOptionSelect();
+    const optionList = listEle.querySelectorAll('[role="option"]');
+
+    const selectedItem = Array.from(optionList).find((item) =>
+      ev.composedPath().includes(item),
+    );
+
+    if (!selectedItem || !currentItem) return;
+    setFocusedOption(currentItem, selectedItem);
+  };
+
   const handleListKeydown = (ev: KeyboardEvent) => {
     const listEle = listRef.current;
     if (!listEle) return;
@@ -94,30 +119,14 @@ const LofiSelectPanel = forwardRef<
       case Key.Down: {
         const nextOption = findNextOption(optionList, currentItem);
         if (nextOption) {
-          currentItem.removeAttribute('aria-selected');
-          nextOption.setAttribute('aria-selected', 'true');
-          if (focusedItemClassname) {
-            currentItem.classList.remove(focusedItemClassname);
-            nextOption.classList.add(focusedItemClassname);
-          }
-          curSelectedValue.current = String(
-            nextOption.getAttribute('data-value') ?? '',
-          );
+          setFocusedOption(currentItem, nextOption);
         }
         break;
       }
       case Key.Up: {
         const previousOption = findPreviousOption(optionList, currentItem);
         if (previousOption) {
-          currentItem.removeAttribute('aria-selected');
-          previousOption.setAttribute('aria-selected', 'true');
-          if (focusedItemClassname) {
-            currentItem.classList.remove(focusedItemClassname);
-            previousOption.classList.add(focusedItemClassname);
-          }
-          curSelectedValue.current = String(
-            previousOption.getAttribute('data-value') ?? '',
-          );
+          setFocusedOption(currentItem, previousOption);
         }
         break;
       }
@@ -141,12 +150,13 @@ const LofiSelectPanel = forwardRef<
     if (!listEle || !visible) return;
 
     listEle.addEventListener('keydown', handleListKeydown);
-
+    listEle.addEventListener('mousemove', handleListMouseMove);
     listRef.current?.focus();
 
     initOptionSelect();
     return () => {
       listEle.removeEventListener('keydown', handleListKeydown);
+      listEle.removeEventListener('mousemove', handleListMouseMove);
     };
   }, [visible]);
 

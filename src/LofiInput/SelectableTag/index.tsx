@@ -18,6 +18,7 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     panelWrapClassname,
     dataSource,
     mentionChar,
+    placeholder,
   } = mentionAtom;
   const tagContainerRef = useRef<HTMLSpanElement>(null);
   const dropdownRef = useRef<HTMLDivElement>();
@@ -198,7 +199,7 @@ const SelectableTag: FC<ISelectableTagProps> = ({
       className={classNames('selectable-tag', classname)}
       contentEditable={tagEditable}
       data-mention={mentionChar}
-      data-placeholder={'请选择哈哈哈哈哈哈哈'}
+      data-placeholder={placeholder}
       data-value={curSelect?.value}
     >
       {curSelect?.label}

@@ -30,7 +30,8 @@ export interface IMentionAtom {
   // * [selectable tag]
   searchable?: boolean;
   dataSource?: {
-    type: 'select' | 'cascader';
+    // type: 'select' | 'cascader';
+    type: 'select';
     data: Array<IMentionDataSourceAtom>;
   };
   focusedItemClassname?: string;
