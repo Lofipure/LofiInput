@@ -42,6 +42,10 @@ const EditableTag: FC<IEditableTagProps> = ({
     if (!path.includes(tagContainerRef.current)) {
       setLofiInputEditable?.(true);
       setEditable(false);
+
+      // setTimeout(() => {
+      //   onChange?.();
+      // });
     }
   };
 
@@ -88,7 +92,7 @@ const EditableTag: FC<IEditableTagProps> = ({
       ref={tagContainerRef}
       contentEditable={editable}
       data-placeholder={placeholder}
-      data-mention-char={mentionAtom.mentionChar}
+      data-mention={mentionAtom.mentionChar}
       data-value={value}
     ></span>
   );

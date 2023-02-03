@@ -9,6 +9,7 @@ import './index.less';
 const SelectableTag: FC<ISelectableTagProps> = ({
   mentionAtom,
   lofiInputEle,
+  onSelect,
   setLofiInputEditable,
 }) => {
   const {
@@ -30,14 +31,16 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     const tagEle = tagContainerRef.current;
     if (!tagEle) return;
 
-    setLofiInputEditable?.(false);
-    setTagEditable(true);
+    if (searchable) {
+      setLofiInputEditable?.(false);
+      setTagEditable(true);
 
-    const selectionObj = window.getSelection();
-    selectionObj?.removeAllRanges();
-    const rangeObj = document.createRange();
-    rangeObj?.selectNodeContents(tagEle);
-    selectionObj?.addRange(rangeObj);
+      const selectionObj = window.getSelection();
+      selectionObj?.removeAllRanges();
+      const rangeObj = document.createRange();
+      rangeObj?.selectNodeContents(tagEle);
+      selectionObj?.addRange(rangeObj);
+    }
 
     setTimeout(() => {
       tagEle?.focus();
@@ -103,10 +106,17 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     setCurSelect(item);
     closeDropdown();
 
+    setLofiInputEditable?.(true);
+    setTagEditable(false);
+
     if (searchable) {
       setLofiInputEditable?.(true);
       setTagEditable(false);
     }
+
+    setTimeout(() => {
+      onSelect?.();
+    });
     selectPanelRef.current?.setPanelValue(item.value);
 
     resetSelectionToInput();
@@ -160,9 +170,10 @@ const SelectableTag: FC<ISelectableTagProps> = ({
   const handleDblClick = () => {
     openDropdown();
     setTimeout(() => {
-      if (searchable) {
-        setCurTagEditable();
-      }
+      setCurTagEditable();
+      // if (searchable) {
+      //   setCurTagEditable();
+      // }
     });
   };
 
@@ -181,9 +192,10 @@ const SelectableTag: FC<ISelectableTagProps> = ({
       openDropdown();
 
       setTimeout(() => {
-        if (searchable) {
-          setCurTagEditable();
-        }
+        // if (searchable) {
+        //   setCurTagEditable();
+        // }
+        setCurTagEditable();
       });
     }
 
@@ -201,6 +213,7 @@ const SelectableTag: FC<ISelectableTagProps> = ({
       data-mention={mentionChar}
       data-placeholder={placeholder}
       data-value={curSelect?.value}
+      data-label={curSelect?.label}
     >
       {curSelect?.label}
     </span>

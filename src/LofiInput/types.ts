@@ -8,17 +8,23 @@ export interface IMentionDataSourceAtom {
   children?: IMentionDataSourceAtom[];
 }
 
-export type LofiInputValue = any;
+export type LofiInputValue = Array<{
+  label: string;
+  value: string;
+  mention?: string;
+  isText: boolean;
+}>;
 
 export interface ILofiInputProps {
   wrapClassname?: string;
   classname?: string;
   placeholder?: string;
   mentionList: Array<IMentionAtom>;
+  onChange?: (value: LofiInputValue) => void;
 }
 
 export interface ILofiInputHandler {
-  getValue?: () => LofiInputValue;
+  getValue: () => LofiInputValue;
 }
 
 export interface IMentionAtom {
@@ -48,6 +54,7 @@ export interface ISelectableTagProps {
   mentionAtom: IMentionAtom;
   lofiInputEle: HTMLDivElement;
   setLofiInputEditable?: (editable: boolean) => void;
+  onSelect?: () => void;
 }
 
 export interface IDisplayAtom {

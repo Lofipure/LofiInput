@@ -151,7 +151,7 @@ const LofiSelectPanel = forwardRef<
 
     listEle.addEventListener('keydown', handleListKeydown);
     listEle.addEventListener('mousemove', handleListMouseMove);
-    listRef.current?.focus();
+    listEle.focus();
 
     initOptionSelect();
     return () => {

@@ -1,5 +1,6 @@
+import { Button } from 'antd';
 import LofiInput, { IMentionAtom } from 'LofiInput';
-import React from 'react';
+import React, { ElementRef, useRef } from 'react';
 import './index.less';
 
 const createOptions = (parentId?: string) =>
@@ -18,6 +19,7 @@ const options = createOptions('').map((item) => ({
 console.log(options);
 
 export default () => {
+  const inputRef = useRef<ElementRef<typeof LofiInput>>(null);
   const mentionList: IMentionAtom[] = [
     {
       mentionChar: '$',
@@ -50,9 +52,27 @@ export default () => {
   ];
 
   return (
-    <LofiInput
-      mentionList={mentionList}
-      placeholder="请输入, @ - 支持搜索, # - 不支持搜索, $ - 输入常数"
-    />
+    <div>
+      <LofiInput
+        ref={inputRef}
+        mentionList={mentionList}
+        placeholder="请输入, @ - 支持搜索, # - 不支持搜索, $ - 输入常数"
+        onChange={(value) => {
+          console.log(
+            '[🔧 Debug 🔧]',
+            'value',
+            value.map((item) => item.value),
+          );
+        }}
+      />
+      <Button
+        onClick={() => {
+          const value = inputRef.current?.getValue();
+          console.log('[🔧 Debug 🔧]', 'kankan value', value);
+        }}
+      >
+        Get Value
+      </Button>
+    </div>
   );
 };
