@@ -1,0 +1,25 @@
+name: github pages
+
+on:
+  push:
+    branches:
+      - main # default branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build
+      - run: |
+          npm install
+          npm run docs:build
+      # 文档编译命令，如果是 react 模板需要修改为 npm run docs:build
+      # - run: npm run docs:build
+     - name: Deploy to Github
+        uses: JamesIves/github-pages-deploy-action@4.0.0
+        with:
+          branch: doc-build # 打包的内容放到build分支下
+          folder: dist
