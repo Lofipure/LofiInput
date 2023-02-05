@@ -42,10 +42,6 @@ const EditableTag: FC<IEditableTagProps> = ({
     if (!path.includes(tagContainerRef.current)) {
       setLofiInputEditable?.(true);
       setEditable(false);
-
-      // setTimeout(() => {
-      //   onChange?.();
-      // });
     }
   };
 
@@ -88,7 +84,7 @@ const EditableTag: FC<IEditableTagProps> = ({
 
   return (
     <span
-      className={classNames('editable-tag', classname)}
+      className={classNames('editable-tag', 'value-wrap', classname)}
       ref={tagContainerRef}
       contentEditable={editable}
       data-placeholder={placeholder}

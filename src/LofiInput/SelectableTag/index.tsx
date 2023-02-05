@@ -20,6 +20,7 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     dataSource,
     mentionChar,
     placeholder,
+    empty,
   } = mentionAtom;
   const tagContainerRef = useRef<HTMLSpanElement>(null);
   const dropdownRef = useRef<HTMLDivElement>();
@@ -106,9 +107,6 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     setCurSelect(item);
     closeDropdown();
 
-    setLofiInputEditable?.(true);
-    setTagEditable(false);
-
     if (searchable) {
       setLofiInputEditable?.(true);
       setTagEditable(false);
@@ -144,6 +142,7 @@ const SelectableTag: FC<ISelectableTagProps> = ({
           ref={selectPanelRef}
           options={dataSource?.data}
           onValueChange={handleValueChange}
+          empty={empty}
         />,
         dropdownRef.current,
       );
@@ -208,7 +207,7 @@ const SelectableTag: FC<ISelectableTagProps> = ({
   return (
     <span
       ref={tagContainerRef}
-      className={classNames('selectable-tag', classname)}
+      className={classNames('selectable-tag', 'value-wrap', classname)}
       contentEditable={tagEditable}
       data-mention={mentionChar}
       data-placeholder={placeholder}

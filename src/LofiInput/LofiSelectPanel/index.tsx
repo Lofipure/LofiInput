@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React, {
   forwardRef,
+  ReactNode,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -16,6 +17,7 @@ interface ILofiSelectPanelProps {
   focusedItemClassname?: string;
   wrapClassname?: string;
   options?: IMentionDataSourceAtom[];
+  empty?: ReactNode;
   onValueChange: (value: IMentionDataSourceAtom) => void;
 }
 
@@ -36,6 +38,7 @@ const LofiSelectPanel = forwardRef<
     options: dataSource,
     focusedItemClassname,
     wrapClassname,
+    empty,
     onValueChange,
   } = props;
   const [options, setOptions] = useState<IMentionDataSourceAtom[]>(
@@ -178,20 +181,26 @@ const LofiSelectPanel = forwardRef<
       ref={listRef}
       tabIndex={0}
     >
-      {renderOptions.map((item) => (
-        <div
-          className={classNames('lofi-select-panel__item', {
-            ['lofi-select-panel__item-active']: value === item.value,
-          })}
-          key={item.value}
-          data-value={item.value}
-          data-label={item.label}
-          role="option"
-          onClick={() => onValueChange(item)}
-        >
-          {item.label}
-        </div>
-      ))}
+      {renderOptions?.length ? (
+        renderOptions.map((item) => (
+          <div
+            className={classNames('lofi-select-panel__item', {
+              ['lofi-select-panel__item-active']: value === item.value,
+            })}
+            key={item.value}
+            data-value={item.value}
+            data-label={item.label}
+            role="option"
+            onClick={() => onValueChange(item)}
+          >
+            {item.label}
+          </div>
+        ))
+      ) : empty ? (
+        <>{empty}</>
+      ) : (
+        '暂无数据'
+      )}
     </div>
   );
 });

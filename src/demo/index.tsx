@@ -1,4 +1,3 @@
-import { Button } from 'antd';
 import LofiInput, { IMentionAtom } from 'LofiInput';
 import React, { ElementRef, useRef } from 'react';
 import './index.less';
@@ -8,15 +7,6 @@ const createOptions = (parentId?: string) =>
     label: `${parentId ? `[${parentId}]` : ''}option_${index + 1}`,
     value: String(index + 1) + (parentId || ''),
   }));
-
-const options = createOptions('').map((item) => ({
-  ...item,
-  children: createOptions(item.value).map((atom) => ({
-    ...atom,
-    children: createOptions(item.value + atom.value),
-  })),
-}));
-console.log(options);
 
 export default () => {
   const inputRef = useRef<ElementRef<typeof LofiInput>>(null);
@@ -65,14 +55,6 @@ export default () => {
           );
         }}
       />
-      <Button
-        onClick={() => {
-          const value = inputRef.current?.getValue();
-          console.log('[🔧 Debug 🔧]', 'kankan value', value);
-        }}
-      >
-        Get Value
-      </Button>
     </div>
   );
 };

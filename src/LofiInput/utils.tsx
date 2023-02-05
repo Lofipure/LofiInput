@@ -11,6 +11,7 @@ export const renderEditableMentionTag = (param: {
 }) => {
   const { lofiInputEle, mention, setLofiInputEditable } = param;
   const depEle = document.createElement('span');
+  depEle.setAttribute('contenteditable', 'false');
   render(
     <EditableTag
       lofiInputEle={lofiInputEle}
@@ -21,7 +22,7 @@ export const renderEditableMentionTag = (param: {
   );
 
   const selectionObj = window.getSelection();
-  selectionObj?.getRangeAt(0).insertNode(depEle.childNodes[0]);
+  selectionObj?.getRangeAt(0).insertNode(depEle);
 };
 
 export const renderSelectableMentionTag = (param: {
@@ -32,6 +33,7 @@ export const renderSelectableMentionTag = (param: {
 }) => {
   const { mention, lofiInputEle, setLofiInputEditable, onChange } = param;
   const depEle = document.createElement('span');
+  depEle.setAttribute('contenteditable', 'false');
   render(
     <SelectableTag
       mentionAtom={mention}
@@ -43,5 +45,5 @@ export const renderSelectableMentionTag = (param: {
   );
 
   const selectionObj = window.getSelection();
-  selectionObj?.getRangeAt(0).insertNode(depEle.childNodes[0]);
+  selectionObj?.getRangeAt(0).insertNode(depEle);
 };

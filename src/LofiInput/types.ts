@@ -25,6 +25,7 @@ export interface ILofiInputProps {
 
 export interface ILofiInputHandler {
   getValue: () => LofiInputValue;
+  setValue: (value: LofiInputValue) => void;
 }
 
 export interface IMentionAtom {
@@ -36,12 +37,12 @@ export interface IMentionAtom {
   // * [selectable tag]
   searchable?: boolean;
   dataSource?: {
-    // type: 'select' | 'cascader';
     type: 'select';
     data: Array<IMentionDataSourceAtom>;
   };
   focusedItemClassname?: string;
   panelWrapClassname?: string;
+  empty?: ReactNode;
 }
 
 export interface IEditableTagProps {

@@ -23,33 +23,44 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
       setEditable(editable);
     };
 
-    const getValue = () => {
-      const children = inputRef.current?.childNodes?.length
-        ? Array.from(inputRef.current.childNodes)
-        : [];
-      if (!children?.length) return [];
+    const getValue: ILofiInputHandler['getValue'] = () =>
+      Array.from(inputRef.current?.childNodes ?? [])?.reduce<LofiInputValue>(
+        (resultList, curNode) => {
+          if (curNode.nodeType === NodeType.ElementNode) {
+            const dataset = Object(
+              (
+                (curNode as HTMLSpanElement).getElementsByClassName(
+                  'value-wrap',
+                )[0] as HTMLSpanElement
+              ).dataset,
+            );
+            if (dataset)
+              resultList.push({
+                label: dataset?.label ?? dataset?.value,
+                value: dataset?.value,
+                mention: dataset?.mention,
+                isText: false,
+              });
+          } else if (curNode.nodeType === NodeType.TextNode) {
+            (curNode.nodeValue?.toString() ?? '')
+              .trim()
+              .split('')
+              .forEach((char) => {
+                resultList.push({
+                  label: char,
+                  value: char,
+                  isText: true,
+                });
+              });
+          }
+          return resultList;
+        },
+        [],
+      );
 
-      return children.reduce<LofiInputValue>((resultList, curNode) => {
-        if (curNode.nodeType === NodeType.ElementNode) {
-          const dataset = Object((curNode as HTMLSpanElement).dataset);
-          if (dataset)
-            resultList.push({
-              label: dataset?.label ?? dataset?.value,
-              value: dataset?.value,
-              mention: dataset?.mention,
-              isText: false,
-            });
-        } else if (curNode.nodeType === NodeType.TextNode) {
-          (curNode.nodeValue?.toString() ?? '').split('').forEach((char) => {
-            resultList.push({
-              label: char,
-              value: char,
-              isText: true,
-            });
-          });
-        }
-        return resultList;
-      }, []);
+    const setValue: ILofiInputHandler['setValue'] = (value) => {
+      // TODO set value
+      console.log('[🔧 Debug 🔧]', 'set value', value);
     };
 
     const handleValueChange = () => {
@@ -103,6 +114,7 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
 
     useImperativeHandle(ref, () => ({
       getValue,
+      setValue,
     }));
 
     return (
