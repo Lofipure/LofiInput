@@ -1,12 +1,15 @@
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState, type FC } from 'react';
+import { VALUE_WRAP_CLASS } from '../const';
 import { IEditableTagProps } from '../types';
+import { setSelectionAfterTarget } from '../utils';
 import './index.less';
 
 const EditableTag: FC<IEditableTagProps> = ({
   mentionAtom,
   lofiInputEle,
   setLofiInputEditable,
+  onSelectionChange,
 }) => {
   const { classname, placeholder } = mentionAtom;
   const [editable, setEditable] = useState<boolean>(false);
@@ -46,6 +49,8 @@ const EditableTag: FC<IEditableTagProps> = ({
   };
 
   const handleKeyDown = (ev: KeyboardEvent) => {
+    const tagEle = tagContainerRef.current;
+    if (!tagEle) return;
     if (['Enter', 'Space'].includes(ev.code)) {
       ev.preventDefault();
 
@@ -54,19 +59,8 @@ const EditableTag: FC<IEditableTagProps> = ({
 
       setValue(tagContainerRef.current?.innerText);
 
-      // selection 选择 input元素作为锚点
-      const selection = window.getSelection();
-      selection?.removeAllRanges();
-
-      const range = document.createRange();
-      range.selectNodeContents(lofiInputEle);
-      range.collapse(false);
-
-      selection?.addRange(range);
-
-      setTimeout(() => {
-        lofiInputEle.focus();
-      });
+      const offset = setSelectionAfterTarget(tagEle, lofiInputEle);
+      onSelectionChange?.(offset);
       return;
     }
   };
@@ -84,7 +78,7 @@ const EditableTag: FC<IEditableTagProps> = ({
 
   return (
     <span
-      className={classNames('editable-tag', 'value-wrap', classname)}
+      className={classNames('editable-tag', VALUE_WRAP_CLASS, classname)}
       ref={tagContainerRef}
       contentEditable={editable}
       data-placeholder={placeholder}

@@ -1,15 +1,17 @@
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState, type FC } from 'react';
 import { render } from 'react-dom';
-import { Key } from '../const';
+import { Key, VALUE_WRAP_CLASS } from '../const';
 import LofiSelectPanel, { ILofiSelectPanelHandler } from '../LofiSelectPanel';
 import { IMentionDataSourceAtom, ISelectableTagProps } from '../types';
+import { setSelectionAfterTarget } from '../utils';
 import './index.less';
 
 const SelectableTag: FC<ISelectableTagProps> = ({
   mentionAtom,
   lofiInputEle,
   onSelect,
+  onSelectionChange,
   setLofiInputEditable,
 }) => {
   const {
@@ -49,17 +51,11 @@ const SelectableTag: FC<ISelectableTagProps> = ({
   };
 
   const resetSelectionToInput = () => {
-    const selection = window.getSelection();
-    selection?.removeAllRanges();
-
-    const range = document.createRange();
-    range.selectNodeContents(lofiInputEle);
-    range.collapse(false);
-
-    selection?.addRange(range);
-    setTimeout(() => {
-      lofiInputEle.focus();
-    });
+    const tagEle = tagContainerRef.current;
+    if (tagEle) {
+      const offset = setSelectionAfterTarget(tagEle, lofiInputEle);
+      onSelectionChange?.(offset);
+    }
   };
 
   const closeDropdown = () => {
@@ -191,9 +187,6 @@ const SelectableTag: FC<ISelectableTagProps> = ({
       openDropdown();
 
       setTimeout(() => {
-        // if (searchable) {
-        //   setCurTagEditable();
-        // }
         setCurTagEditable();
       });
     }
@@ -207,7 +200,7 @@ const SelectableTag: FC<ISelectableTagProps> = ({
   return (
     <span
       ref={tagContainerRef}
-      className={classNames('selectable-tag', 'value-wrap', classname)}
+      className={classNames('selectable-tag', VALUE_WRAP_CLASS, classname)}
       contentEditable={tagEditable}
       data-mention={mentionChar}
       data-placeholder={placeholder}

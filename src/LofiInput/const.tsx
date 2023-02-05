@@ -25,3 +25,7 @@ export const excludeKeys = [
   Key.Down,
   Key.Up,
 ];
+
+export const directionKeys = [Key.Down, Key.Up, Key.Left, Key.Right];
+
+export const VALUE_WRAP_CLASS = 'value-wrap';

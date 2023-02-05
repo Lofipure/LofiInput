@@ -6,18 +6,34 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { excludeKeys, NodeType } from './const';
+import { excludeKeys, NodeType, VALUE_WRAP_CLASS } from './const';
 import './index.less';
 import { ILofiInputHandler, ILofiInputProps, LofiInputValue } from './types';
-import { renderEditableMentionTag, renderSelectableMentionTag } from './utils';
+import {
+  getLofiInputCurOffset,
+  renderEditableMentionTag,
+  renderSelectableMentionTag,
+} from './utils';
 
 const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
   (props, ref) => {
-    const { classname, mentionList, placeholder, wrapClassname, onChange } =
-      props;
+    const {
+      classname,
+      mentionList,
+      placeholder,
+      wrapClassname,
+      onChange,
+      onSelectionChange,
+    } = props;
     const [editable, setEditable] = useState<boolean>(true);
 
     const inputRef = useRef<HTMLDivElement>(null);
+
+    const handleSelectionChange: ILofiInputProps['onSelectionChange'] = (
+      offset,
+    ) => {
+      onSelectionChange?.(offset);
+    };
 
     const setLofiInputEditable = (editable: boolean) => {
       setEditable(editable);
@@ -30,7 +46,7 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
             const dataset = Object(
               (
                 (curNode as HTMLSpanElement).getElementsByClassName(
-                  'value-wrap',
+                  VALUE_WRAP_CLASS,
                 )[0] as HTMLSpanElement
               ).dataset,
             );
@@ -81,6 +97,7 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
             lofiInputEle: inputEle,
             mention: mentionItem,
             setLofiInputEditable,
+            onSelectionChange: handleSelectionChange,
           });
         else
           renderSelectableMentionTag({
@@ -88,6 +105,7 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
             mention: mentionItem,
             setLofiInputEditable,
             onChange: handleValueChange,
+            onSelectionChange: handleSelectionChange,
           });
       } else {
         setTimeout(() => {
@@ -101,6 +119,9 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
             )
               handleValueChange();
           }
+
+          const offset = getLofiInputCurOffset(inputEle);
+          if (offset) handleSelectionChange(offset);
         });
       }
     };
@@ -110,6 +131,9 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
       if (!inputEle) return;
 
       inputEle.addEventListener('keydown', handleKeyDown);
+      return () => {
+        inputEle.removeEventListener('keydown', handleKeyDown);
+      };
     }, []);
 
     useImperativeHandle(ref, () => ({

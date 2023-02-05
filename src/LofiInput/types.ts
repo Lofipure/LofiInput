@@ -21,6 +21,7 @@ export interface ILofiInputProps {
   placeholder?: string;
   mentionList: Array<IMentionAtom>;
   onChange?: (value: LofiInputValue) => void;
+  onSelectionChange?: (offset: number) => void;
 }
 
 export interface ILofiInputHandler {
@@ -49,13 +50,15 @@ export interface IEditableTagProps {
   lofiInputEle: HTMLDivElement;
   mentionAtom: IMentionAtom;
   setLofiInputEditable?: (editable: boolean) => void;
+  onSelectionChange?: (offset: number) => void;
 }
 
 export interface ISelectableTagProps {
-  mentionAtom: IMentionAtom;
   lofiInputEle: HTMLDivElement;
+  mentionAtom: IMentionAtom;
   setLofiInputEditable?: (editable: boolean) => void;
   onSelect?: () => void;
+  onSelectionChange?: (offset: number) => void;
 }
 
 export interface IDisplayAtom {

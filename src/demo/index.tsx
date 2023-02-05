@@ -1,4 +1,4 @@
-import LofiInput, { IMentionAtom } from 'LofiInput';
+import LofiInput, { IMentionAtom, LofiInputValue } from 'LofiInput';
 import React, { ElementRef, useRef } from 'react';
 import './index.less';
 
@@ -10,6 +10,7 @@ const createOptions = (parentId?: string) =>
 
 export default () => {
   const inputRef = useRef<ElementRef<typeof LofiInput>>(null);
+
   const mentionList: IMentionAtom[] = [
     {
       mentionChar: '$',
@@ -41,19 +42,17 @@ export default () => {
     },
   ];
 
+  const handleValueChange = (value: LofiInputValue) => {
+    console.log(value);
+  };
+
   return (
     <div>
       <LofiInput
         ref={inputRef}
         mentionList={mentionList}
         placeholder="请输入, @ - 支持搜索, # - 不支持搜索, $ - 输入常数"
-        onChange={(value) => {
-          console.log(
-            '[🔧 Debug 🔧]',
-            'value',
-            value.map((item) => item.value),
-          );
-        }}
+        onChange={handleValueChange}
       />
     </div>
   );
