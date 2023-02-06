@@ -8,12 +8,13 @@ import './index.less';
 const EditableTag: FC<IEditableTagProps> = ({
   mentionAtom,
   lofiInputEle,
+  defaultValue,
   setLofiInputEditable,
   onSelectionChange,
 }) => {
   const { classname, placeholder } = mentionAtom;
   const [editable, setEditable] = useState<boolean>(false);
-  const [value, setValue] = useState<string>();
+  const [value, setValue] = useState<string | undefined>(defaultValue?.value);
   const tagContainerRef = useRef<HTMLDivElement>(null);
 
   const setCurTagEditable = () => {
@@ -72,7 +73,8 @@ const EditableTag: FC<IEditableTagProps> = ({
       tagEle.addEventListener('keydown', handleKeyDown);
       document.addEventListener('mousedown', handleOutofTag);
 
-      setCurTagEditable();
+      if (!defaultValue) setCurTagEditable();
+      if (defaultValue) window.getSelection()?.getRangeAt(0).collapse(false);
     }
   }, []);
 
@@ -84,7 +86,9 @@ const EditableTag: FC<IEditableTagProps> = ({
       data-placeholder={placeholder}
       data-mention={mentionAtom.mentionChar}
       data-value={value}
-    ></span>
+    >
+      {value}
+    </span>
   );
 };
 

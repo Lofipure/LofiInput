@@ -24,24 +24,14 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
       wrapClassname,
       onChange,
       onSelectionChange,
+      onBlur,
     } = props;
     const [editable, setEditable] = useState<boolean>(true);
-
     const inputRef = useRef<HTMLDivElement>(null);
-
-    const handleSelectionChange: ILofiInputProps['onSelectionChange'] = (
-      offset,
-    ) => {
-      onSelectionChange?.(offset);
-    };
-
-    const setLofiInputEditable = (editable: boolean) => {
-      setEditable(editable);
-    };
 
     const getValue: ILofiInputHandler['getValue'] = () =>
       Array.from(inputRef.current?.childNodes ?? [])?.reduce<LofiInputValue>(
-        (resultList, curNode) => {
+        (resultList, curNode, index) => {
           if (curNode.nodeType === NodeType.ElementNode) {
             const dataset = Object(
               (
@@ -56,16 +46,23 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
                 value: dataset?.value,
                 mention: dataset?.mention,
                 isText: false,
+                positionPin: {
+                  offset: index + 1,
+                },
               });
           } else if (curNode.nodeType === NodeType.TextNode) {
             (curNode.nodeValue?.toString() ?? '')
               .trim()
               .split('')
-              .forEach((char) => {
+              .forEach((char, charIdx) => {
                 resultList.push({
                   label: char,
                   value: char,
                   isText: true,
+                  positionPin: {
+                    node: curNode,
+                    offset: charIdx + 1,
+                  },
                 });
               });
           }
@@ -74,13 +71,76 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
         [],
       );
 
-    const setValue: ILofiInputHandler['setValue'] = (value) => {
-      // TODO set value
-      console.log('[🔧 Debug 🔧]', 'set value', value);
+    const handleSelectionChange: ILofiInputProps['onSelectionChange'] = (
+      offset,
+    ) => {
+      onSelectionChange?.(offset);
     };
 
     const handleValueChange = () => {
       onChange?.(getValue());
+    };
+
+    const setLofiInputEditable = (editable: boolean) => {
+      setEditable(editable);
+    };
+
+    const insertMentionTag: ILofiInputHandler['insertMentionTag'] = (
+      dataAtom,
+    ) => {
+      const inputEle = inputRef.current;
+      const { mentionChar, label, value } = dataAtom;
+      const mentionConfig = mentionList.find(
+        (item) => item.mentionChar === mentionChar,
+      );
+      if (!mentionConfig || !inputEle) return false;
+
+      if (mentionConfig.mode === 'selectable')
+        renderSelectableMentionTag({
+          lofiInputEle: inputEle,
+          mention: mentionConfig,
+          setLofiInputEditable,
+          onChange: handleValueChange,
+          onSelectionChange: handleSelectionChange,
+          defaultValue: {
+            mentionChar,
+            label,
+            value,
+          },
+        });
+      else
+        renderEditableMentionTag({
+          lofiInputEle: inputEle,
+          mention: mentionConfig,
+          setLofiInputEditable,
+          onSelectionChange: handleSelectionChange,
+          defaultValue: {
+            mentionChar,
+            label,
+            value,
+          },
+        });
+      return true;
+    };
+
+    const focusAt: ILofiInputHandler['focusAt'] = (positionPin) => {
+      const inputEle = inputRef.current;
+      if (!inputEle) return;
+      inputEle.focus();
+
+      setTimeout(() => {
+        if (positionPin) {
+          const selection = window.getSelection();
+          const rangeObj = selection?.getRangeAt(0);
+
+          rangeObj?.setStart(positionPin?.node ?? inputEle, positionPin.offset);
+        }
+      });
+    };
+
+    const setValue: ILofiInputHandler['setValue'] = (value) => {
+      // TODO set value
+      console.log('[🔧 Debug 🔧]', 'set value', value);
     };
 
     const handleKeyDown = (ev: KeyboardEvent) => {
@@ -126,19 +186,35 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
       }
     };
 
+    const handleBlur = () => {
+      const selectionObj = window.getSelection();
+      const rangeObj = selectionObj?.getRangeAt(0);
+      const { startContainer, startOffset } = rangeObj || {};
+      if (startOffset === undefined) return;
+      onBlur?.({
+        offset: startOffset,
+        node: startContainer,
+      });
+    };
+
     useEffect(() => {
       const inputEle = inputRef.current;
       if (!inputEle) return;
 
       inputEle.addEventListener('keydown', handleKeyDown);
+
+      inputEle.addEventListener('blur', handleBlur);
       return () => {
         inputEle.removeEventListener('keydown', handleKeyDown);
+        inputEle.removeEventListener('blur', handleBlur);
       };
     }, []);
 
     useImperativeHandle(ref, () => ({
       getValue,
       setValue,
+      focusAt,
+      insertMentionTag,
     }));
 
     return (

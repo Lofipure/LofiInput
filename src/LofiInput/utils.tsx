@@ -3,22 +3,29 @@ import { render } from 'react-dom';
 import { NodeType, VALUE_WRAP_CLASS } from './const';
 import EditableTag from './EditableTag';
 import SelectableTag from './SelectableTag';
-import { ILofiInputProps, IMentionAtom } from './types';
+import { ILofiInputProps, IMentionAtom, IMentionInsertAtom } from './types';
 
 export const renderEditableMentionTag = (param: {
   lofiInputEle: HTMLDivElement;
   mention: IMentionAtom;
+  defaultValue?: IMentionInsertAtom;
   setLofiInputEditable?: (editable: boolean) => void;
   onSelectionChange?: ILofiInputProps['onSelectionChange'];
 }) => {
-  const { lofiInputEle, mention, setLofiInputEditable, onSelectionChange } =
-    param;
+  const {
+    lofiInputEle,
+    mention,
+    defaultValue,
+    setLofiInputEditable,
+    onSelectionChange,
+  } = param;
   const depEle = document.createElement('span');
   depEle.setAttribute('contenteditable', 'false');
   render(
     <EditableTag
       lofiInputEle={lofiInputEle}
       mentionAtom={mention}
+      defaultValue={defaultValue}
       setLofiInputEditable={setLofiInputEditable}
       onSelectionChange={onSelectionChange}
     />,
@@ -32,6 +39,7 @@ export const renderEditableMentionTag = (param: {
 export const renderSelectableMentionTag = (param: {
   lofiInputEle: HTMLDivElement;
   mention: IMentionAtom;
+  defaultValue?: IMentionInsertAtom;
   setLofiInputEditable?: (editable: boolean) => void;
   onChange?: () => void;
   onSelectionChange?: ILofiInputProps['onSelectionChange'];
@@ -39,6 +47,7 @@ export const renderSelectableMentionTag = (param: {
   const {
     mention,
     lofiInputEle,
+    defaultValue,
     setLofiInputEditable,
     onChange,
     onSelectionChange,
@@ -52,6 +61,7 @@ export const renderSelectableMentionTag = (param: {
       setLofiInputEditable={setLofiInputEditable}
       onSelect={onChange}
       onSelectionChange={onSelectionChange}
+      defaultValue={defaultValue}
     />,
     depEle,
   );

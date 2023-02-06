@@ -13,6 +13,7 @@ const SelectableTag: FC<ISelectableTagProps> = ({
   onSelect,
   onSelectionChange,
   setLofiInputEditable,
+  defaultValue,
 }) => {
   const {
     classname,
@@ -27,7 +28,9 @@ const SelectableTag: FC<ISelectableTagProps> = ({
   const tagContainerRef = useRef<HTMLSpanElement>(null);
   const dropdownRef = useRef<HTMLDivElement>();
   const selectPanelRef = useRef<ILofiSelectPanelHandler>(null);
-  const [curSelect, setCurSelect] = useState<IMentionDataSourceAtom>();
+  const [curSelect, setCurSelect] = useState<
+    IMentionDataSourceAtom | undefined
+  >(defaultValue);
   const [tagEditable, setTagEditable] = useState<boolean>(false);
 
   const setCurTagEditable = () => {
@@ -166,9 +169,6 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     openDropdown();
     setTimeout(() => {
       setCurTagEditable();
-      // if (searchable) {
-      //   setCurTagEditable();
-      // }
     });
   };
 
@@ -184,8 +184,8 @@ const SelectableTag: FC<ISelectableTagProps> = ({
       tagEle.addEventListener('keydown', handleKeydown);
       document.addEventListener('click', handleOutofTag);
 
-      openDropdown();
-
+      if (!defaultValue) openDropdown();
+      if (defaultValue) window.getSelection()?.getRangeAt(0).collapse(false);
       setTimeout(() => {
         setCurTagEditable();
       });

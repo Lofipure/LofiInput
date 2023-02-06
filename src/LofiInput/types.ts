@@ -2,6 +2,12 @@ import { ReactNode } from 'react';
 
 export type MentionValueType = number | string;
 
+export interface IMentionInsertAtom {
+  mentionChar: string;
+  label: string;
+  value: string;
+}
+
 export interface IMentionDataSourceAtom {
   label: string;
   value: MentionValueType;
@@ -11,9 +17,15 @@ export interface IMentionDataSourceAtom {
 export type LofiInputValue = Array<{
   label: string;
   value: string;
-  mention?: string;
   isText: boolean;
+  mention?: string;
+  positionPin?: IPinPosition;
 }>;
+
+export interface IPinPosition {
+  offset: number;
+  node?: Node;
+}
 
 export interface ILofiInputProps {
   wrapClassname?: string;
@@ -22,11 +34,14 @@ export interface ILofiInputProps {
   mentionList: Array<IMentionAtom>;
   onChange?: (value: LofiInputValue) => void;
   onSelectionChange?: (offset: number) => void;
+  onBlur?: (positionPin: IPinPosition) => void;
 }
 
 export interface ILofiInputHandler {
   getValue: () => LofiInputValue;
   setValue: (value: LofiInputValue) => void;
+  focusAt: (positionPin?: IPinPosition) => void;
+  insertMentionTag: (value: IMentionInsertAtom) => boolean;
 }
 
 export interface IMentionAtom {
@@ -49,6 +64,7 @@ export interface IMentionAtom {
 export interface IEditableTagProps {
   lofiInputEle: HTMLDivElement;
   mentionAtom: IMentionAtom;
+  defaultValue?: IMentionInsertAtom;
   setLofiInputEditable?: (editable: boolean) => void;
   onSelectionChange?: (offset: number) => void;
 }
@@ -56,6 +72,7 @@ export interface IEditableTagProps {
 export interface ISelectableTagProps {
   lofiInputEle: HTMLDivElement;
   mentionAtom: IMentionAtom;
+  defaultValue?: IMentionInsertAtom;
   setLofiInputEditable?: (editable: boolean) => void;
   onSelect?: () => void;
   onSelectionChange?: (offset: number) => void;

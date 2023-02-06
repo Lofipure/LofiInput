@@ -1,5 +1,9 @@
-import LofiInput, { IMentionAtom, LofiInputValue } from 'LofiInput';
-import React, { ElementRef, useRef } from 'react';
+import LofiInput, {
+  IMentionAtom,
+  IPinPosition,
+  LofiInputValue,
+} from 'LofiInput';
+import React, { ElementRef, useRef, useState } from 'react';
 import './index.less';
 
 const createOptions = (parentId?: string) =>
@@ -10,6 +14,7 @@ const createOptions = (parentId?: string) =>
 
 export default () => {
   const inputRef = useRef<ElementRef<typeof LofiInput>>(null);
+  const [positionPin, setPositionPin] = useState<IPinPosition>();
 
   const mentionList: IMentionAtom[] = [
     {
@@ -53,7 +58,46 @@ export default () => {
         mentionList={mentionList}
         placeholder="请输入, @ - 支持搜索, # - 不支持搜索, $ - 输入常数"
         onChange={handleValueChange}
+        onBlur={(positionPin) => {
+          setPositionPin(positionPin);
+        }}
       />
+      <div className="ctrl">
+        <div
+          className="btn"
+          onClick={() => {
+            inputRef.current?.focusAt(positionPin);
+          }}
+        >
+          Focus At Last Position
+        </div>
+        <div
+          className="btn"
+          onClick={() => {
+            inputRef.current?.focusAt(positionPin);
+            inputRef.current?.insertMentionTag({
+              mentionChar: '#',
+              label: 'InsertTag',
+              value: 'wuhu~~~',
+            });
+          }}
+        >
+          Insert {`{ mentionChar: "#", label: "InsertTag", value: "wuhu~~~" }`}
+        </div>
+        <div
+          className="btn"
+          onClick={() => {
+            inputRef.current?.focusAt(positionPin);
+            inputRef.current?.insertMentionTag({
+              mentionChar: '$',
+              label: '110',
+              value: '110',
+            });
+          }}
+        >
+          Insert {`{ mentionChar: "$", label: "110", value: "110" }`}
+        </div>
+      </div>
     </div>
   );
 };
