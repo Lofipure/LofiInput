@@ -11,7 +11,6 @@ const SelectableTag: FC<ISelectableTagProps> = ({
   mentionAtom,
   lofiInputEle,
   onSelect,
-  onSelectionChange,
   setLofiInputEditable,
   defaultValue,
 }) => {
@@ -24,6 +23,7 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     mentionChar,
     placeholder,
     empty,
+    showMentionCharBefore,
   } = mentionAtom;
   const tagContainerRef = useRef<HTMLSpanElement>(null);
   const dropdownRef = useRef<HTMLDivElement>();
@@ -49,15 +49,14 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     }
 
     setTimeout(() => {
-      tagEle?.focus();
+      if (searchable) tagEle?.focus();
     });
   };
 
   const resetSelectionToInput = () => {
     const tagEle = tagContainerRef.current;
     if (tagEle) {
-      const offset = setSelectionAfterTarget(tagEle, lofiInputEle);
-      onSelectionChange?.(offset);
+      setSelectionAfterTarget(tagEle, lofiInputEle);
     }
   };
 
@@ -128,12 +127,6 @@ const SelectableTag: FC<ISelectableTagProps> = ({
       dropDownContent.setAttribute('class', 'lofi-dropdown-container');
       dropdownRef.current = dropDownContent;
 
-      const { height: inputHeight, left: inputLeft } =
-        lofiInputEle.getBoundingClientRect();
-      const { left: tagLeft } = tagEle.getBoundingClientRect();
-      dropdownRef.current.style.top = inputHeight + 'px';
-      dropdownRef.current.style.left = tagLeft - inputLeft + 'px';
-
       render(
         <LofiSelectPanel
           focusedItemClassname={focusedItemClassname}
@@ -146,6 +139,12 @@ const SelectableTag: FC<ISelectableTagProps> = ({
         dropdownRef.current,
       );
     }
+
+    const { height: inputHeight, left: inputLeft } =
+      lofiInputEle.getBoundingClientRect();
+    const { left: tagLeft } = tagEle.getBoundingClientRect();
+    dropdownRef.current.style.top = inputHeight + 'px';
+    dropdownRef.current.style.left = tagLeft - inputLeft + 'px';
 
     dropdownRef.current.style.display = 'unset';
     selectPanelRef.current?.setPanelVisible(true);
@@ -185,9 +184,11 @@ const SelectableTag: FC<ISelectableTagProps> = ({
       document.addEventListener('click', handleOutofTag);
 
       if (!defaultValue) openDropdown();
-      if (defaultValue) window.getSelection()?.getRangeAt(0).collapse(false);
+
       setTimeout(() => {
-        setCurTagEditable();
+        if (!defaultValue) setCurTagEditable();
+
+        if (defaultValue) window.getSelection()?.getRangeAt(0).collapse(false);
       });
     }
 
@@ -200,7 +201,9 @@ const SelectableTag: FC<ISelectableTagProps> = ({
   return (
     <span
       ref={tagContainerRef}
-      className={classNames('selectable-tag', VALUE_WRAP_CLASS, classname)}
+      className={classNames('selectable-tag', VALUE_WRAP_CLASS, classname, {
+        'selectable-tag-show-mention': showMentionCharBefore,
+      })}
       contentEditable={tagEditable}
       data-mention={mentionChar}
       data-placeholder={placeholder}

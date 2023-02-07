@@ -118,6 +118,7 @@ const LofiSelectPanel = forwardRef<
     if (!currentItem) return;
 
     const { code } = ev;
+    ev.preventDefault();
     switch (code) {
       case Key.Down: {
         const nextOption = findNextOption(optionList, currentItem);

@@ -3,22 +3,15 @@ import { render } from 'react-dom';
 import { NodeType, VALUE_WRAP_CLASS } from './const';
 import EditableTag from './EditableTag';
 import SelectableTag from './SelectableTag';
-import { ILofiInputProps, IMentionAtom, IMentionInsertAtom } from './types';
+import { IMentionAtom, IMentionInsertAtom } from './types';
 
 export const renderEditableMentionTag = (param: {
   lofiInputEle: HTMLDivElement;
   mention: IMentionAtom;
   defaultValue?: IMentionInsertAtom;
   setLofiInputEditable?: (editable: boolean) => void;
-  onSelectionChange?: ILofiInputProps['onSelectionChange'];
 }) => {
-  const {
-    lofiInputEle,
-    mention,
-    defaultValue,
-    setLofiInputEditable,
-    onSelectionChange,
-  } = param;
+  const { lofiInputEle, mention, defaultValue, setLofiInputEditable } = param;
   const depEle = document.createElement('span');
   depEle.setAttribute('contenteditable', 'false');
   render(
@@ -27,13 +20,11 @@ export const renderEditableMentionTag = (param: {
       mentionAtom={mention}
       defaultValue={defaultValue}
       setLofiInputEditable={setLofiInputEditable}
-      onSelectionChange={onSelectionChange}
     />,
     depEle,
   );
 
-  const selectionObj = window.getSelection();
-  selectionObj?.getRangeAt(0).insertNode(depEle);
+  window.getSelection()?.getRangeAt(0).insertNode(depEle);
 };
 
 export const renderSelectableMentionTag = (param: {
@@ -42,7 +33,6 @@ export const renderSelectableMentionTag = (param: {
   defaultValue?: IMentionInsertAtom;
   setLofiInputEditable?: (editable: boolean) => void;
   onChange?: () => void;
-  onSelectionChange?: ILofiInputProps['onSelectionChange'];
 }) => {
   const {
     mention,
@@ -50,7 +40,6 @@ export const renderSelectableMentionTag = (param: {
     defaultValue,
     setLofiInputEditable,
     onChange,
-    onSelectionChange,
   } = param;
   const depEle = document.createElement('span');
   depEle.setAttribute('contenteditable', 'false');
@@ -60,14 +49,12 @@ export const renderSelectableMentionTag = (param: {
       lofiInputEle={lofiInputEle}
       setLofiInputEditable={setLofiInputEditable}
       onSelect={onChange}
-      onSelectionChange={onSelectionChange}
       defaultValue={defaultValue}
     />,
     depEle,
   );
 
-  const selectionObj = window.getSelection();
-  selectionObj?.getRangeAt(0).insertNode(depEle);
+  window.getSelection()?.getRangeAt(0).insertNode(depEle);
 };
 
 export const setSelectionAfterTarget = (

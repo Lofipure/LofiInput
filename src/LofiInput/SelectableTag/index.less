@@ -12,13 +12,15 @@
     opacity: 0.5;
   }
 
+  &[contenteditable='true'] {
+    outline: none;
+  }
+}
+
+.selectable-tag-show-mention {
   &::before {
     content: attr(data-mention);
     padding-right: 4px;
-  }
-
-  &[contenteditable='true'] {
-    outline: none;
   }
 }
 

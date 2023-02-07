@@ -6,14 +6,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { excludeKeys, NodeType, VALUE_WRAP_CLASS } from './const';
+import { disabledKeys, excludeKeys, NodeType, VALUE_WRAP_CLASS } from './const';
 import './index.less';
 import { ILofiInputHandler, ILofiInputProps, LofiInputValue } from './types';
-import {
-  getLofiInputCurOffset,
-  renderEditableMentionTag,
-  renderSelectableMentionTag,
-} from './utils';
+import { renderEditableMentionTag, renderSelectableMentionTag } from './utils';
 
 const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
   (props, ref) => {
@@ -23,7 +19,6 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
       placeholder,
       wrapClassname,
       onChange,
-      onSelectionChange,
       onBlur,
     } = props;
     const [editable, setEditable] = useState<boolean>(true);
@@ -32,7 +27,10 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
     const getValue: ILofiInputHandler['getValue'] = () =>
       Array.from(inputRef.current?.childNodes ?? [])?.reduce<LofiInputValue>(
         (resultList, curNode, index) => {
-          if (curNode.nodeType === NodeType.ElementNode) {
+          if (
+            curNode.nodeType === NodeType.ElementNode &&
+            curNode.nodeName === 'SPAN'
+          ) {
             const dataset = Object(
               (
                 (curNode as HTMLSpanElement).getElementsByClassName(
@@ -71,12 +69,6 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
         [],
       );
 
-    const handleSelectionChange: ILofiInputProps['onSelectionChange'] = (
-      offset,
-    ) => {
-      onSelectionChange?.(offset);
-    };
-
     const handleValueChange = () => {
       onChange?.(getValue());
     };
@@ -101,7 +93,6 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
           mention: mentionConfig,
           setLofiInputEditable,
           onChange: handleValueChange,
-          onSelectionChange: handleSelectionChange,
           defaultValue: {
             mentionChar,
             label,
@@ -113,14 +104,34 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
           lofiInputEle: inputEle,
           mention: mentionConfig,
           setLofiInputEditable,
-          onSelectionChange: handleSelectionChange,
           defaultValue: {
             mentionChar,
             label,
             value,
           },
         });
+
+      setTimeout(() => {
+        handleValueChange();
+      });
+
       return true;
+    };
+
+    const insertTextNode: ILofiInputHandler['insertTextNode'] = (value) => {
+      const inputEle = inputRef.current;
+      if (!inputEle) return;
+
+      inputEle.focus();
+
+      const rangeObj = window.getSelection()?.getRangeAt(0);
+      rangeObj?.insertNode(document.createTextNode(value));
+
+      rangeObj?.collapse(false);
+
+      setTimeout(() => {
+        handleValueChange();
+      });
     };
 
     const focusAt: ILofiInputHandler['focusAt'] = (positionPin) => {
@@ -139,11 +150,63 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
     };
 
     const setValue: ILofiInputHandler['setValue'] = (value) => {
-      // TODO set value
-      console.log('[🔧 Debug 🔧]', 'set value', value);
+      const inputEle = inputRef.current;
+      if (!inputEle) return;
+
+      inputEle.innerHTML = '';
+
+      inputEle.focus();
+
+      const rangeObj = window.getSelection()?.getRangeAt(0);
+
+      for (let i = 0; i < value?.length; ++i) {
+        const valueAtom = value[i];
+        if (valueAtom?.isText) {
+          rangeObj?.insertNode(document.createTextNode(valueAtom.value));
+        } else {
+          const mentionConfig = mentionList.find(
+            (item) => item.mentionChar === valueAtom.mention,
+          );
+          if (!mentionConfig) continue;
+
+          if (mentionConfig?.mode === 'editable') {
+            renderEditableMentionTag({
+              lofiInputEle: inputEle,
+              mention: mentionConfig,
+              setLofiInputEditable,
+              defaultValue: {
+                mentionChar: mentionConfig.mentionChar,
+                label: valueAtom.label,
+                value: valueAtom.value,
+              },
+            });
+          } else {
+            renderSelectableMentionTag({
+              lofiInputEle: inputEle,
+              mention: mentionConfig,
+              setLofiInputEditable,
+              onChange: handleValueChange,
+              defaultValue: {
+                mentionChar: mentionConfig.mentionChar,
+                label: valueAtom.label,
+                value: valueAtom.value,
+              },
+            });
+          }
+        }
+        rangeObj?.selectNodeContents(inputEle);
+        rangeObj?.collapse(false);
+      }
+
+      setTimeout(() => {
+        handleValueChange();
+      });
     };
 
     const handleKeyDown = (ev: KeyboardEvent) => {
+      if (disabledKeys.includes(ev.code as any)) {
+        ev.preventDefault();
+      }
       const inputEle = inputRef.current;
       if (!inputEle) return;
 
@@ -157,7 +220,6 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
             lofiInputEle: inputEle,
             mention: mentionItem,
             setLofiInputEditable,
-            onSelectionChange: handleSelectionChange,
           });
         else
           renderSelectableMentionTag({
@@ -165,7 +227,6 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
             mention: mentionItem,
             setLofiInputEditable,
             onChange: handleValueChange,
-            onSelectionChange: handleSelectionChange,
           });
       } else {
         setTimeout(() => {
@@ -179,9 +240,6 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
             )
               handleValueChange();
           }
-
-          const offset = getLofiInputCurOffset(inputEle);
-          if (offset) handleSelectionChange(offset);
         });
       }
     };
@@ -215,6 +273,7 @@ const LofiInput = forwardRef<ILofiInputHandler, ILofiInputProps>(
       setValue,
       focusAt,
       insertMentionTag,
+      insertTextNode,
     }));
 
     return (

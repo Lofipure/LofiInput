@@ -10,7 +10,6 @@ const EditableTag: FC<IEditableTagProps> = ({
   lofiInputEle,
   defaultValue,
   setLofiInputEditable,
-  onSelectionChange,
 }) => {
   const { classname, placeholder } = mentionAtom;
   const [editable, setEditable] = useState<boolean>(false);
@@ -60,8 +59,7 @@ const EditableTag: FC<IEditableTagProps> = ({
 
       setValue(tagContainerRef.current?.innerText);
 
-      const offset = setSelectionAfterTarget(tagEle, lofiInputEle);
-      onSelectionChange?.(offset);
+      setSelectionAfterTarget(tagEle, lofiInputEle);
       return;
     }
   };

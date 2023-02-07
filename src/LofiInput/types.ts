@@ -33,7 +33,6 @@ export interface ILofiInputProps {
   placeholder?: string;
   mentionList: Array<IMentionAtom>;
   onChange?: (value: LofiInputValue) => void;
-  onSelectionChange?: (offset: number) => void;
   onBlur?: (positionPin: IPinPosition) => void;
 }
 
@@ -42,6 +41,7 @@ export interface ILofiInputHandler {
   setValue: (value: LofiInputValue) => void;
   focusAt: (positionPin?: IPinPosition) => void;
   insertMentionTag: (value: IMentionInsertAtom) => boolean;
+  insertTextNode: (value: string) => void;
 }
 
 export interface IMentionAtom {
@@ -59,6 +59,7 @@ export interface IMentionAtom {
   focusedItemClassname?: string;
   panelWrapClassname?: string;
   empty?: ReactNode;
+  showMentionCharBefore?: boolean;
 }
 
 export interface IEditableTagProps {
@@ -66,7 +67,6 @@ export interface IEditableTagProps {
   mentionAtom: IMentionAtom;
   defaultValue?: IMentionInsertAtom;
   setLofiInputEditable?: (editable: boolean) => void;
-  onSelectionChange?: (offset: number) => void;
 }
 
 export interface ISelectableTagProps {
@@ -75,7 +75,6 @@ export interface ISelectableTagProps {
   defaultValue?: IMentionInsertAtom;
   setLofiInputEditable?: (editable: boolean) => void;
   onSelect?: () => void;
-  onSelectionChange?: (offset: number) => void;
 }
 
 export interface IDisplayAtom {
