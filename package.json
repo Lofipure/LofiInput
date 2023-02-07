@@ -1,7 +1,7 @@
 {
   "name": "LofiInput",
-  "version": "0.0.1",
-  "description": "A react library developed with dumi",
+  "version": "0.1.0-alpha",
+  "description": "The React-Input component that supports custom rendering of element tags",
   "license": "MIT",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -44,7 +44,9 @@
     ]
   },
   "dependencies": {
-    "classnames": "^2.3.2"
+    "classnames": "^2.3.2",
+    "react": "^17",
+    "react-dom": "^17"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
@@ -60,8 +62,6 @@
     "prettier": "^2.7.1",
     "prettier-plugin-organize-imports": "^3.0.0",
     "prettier-plugin-packagejson": "^2.2.18",
-    "react": "^17",
-    "react-dom": "^17",
     "stylelint": "^14.9.1"
   },
   "peerDependencies": {
