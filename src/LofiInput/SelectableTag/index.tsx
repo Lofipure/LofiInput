@@ -140,10 +140,14 @@ const SelectableTag: FC<ISelectableTagProps> = ({
       );
     }
 
-    const { height: inputHeight, left: inputLeft } =
+    const { top: inputTop, left: inputLeft } =
       lofiInputEle.getBoundingClientRect();
-    const { left: tagLeft } = tagEle.getBoundingClientRect();
-    dropdownRef.current.style.top = inputHeight + 'px';
+    const {
+      left: tagLeft,
+      top: tagTop,
+      height: tagHeight,
+    } = tagEle.getBoundingClientRect();
+    dropdownRef.current.style.top = tagTop - inputTop + tagHeight + 'px';
     dropdownRef.current.style.left = tagLeft - inputLeft + 'px';
 
     dropdownRef.current.style.display = 'unset';

@@ -155,7 +155,9 @@ const LofiSelectPanel = forwardRef<
 
     listEle.addEventListener('keydown', handleListKeydown);
     listEle.addEventListener('mousemove', handleListMouseMove);
-    listEle.focus();
+    listEle.focus({
+      preventScroll: true,
+    });
 
     initOptionSelect();
     return () => {
@@ -169,7 +171,9 @@ const LofiSelectPanel = forwardRef<
     setPanelValue,
     setPanelVisible,
     focusPanel: () => {
-      listRef.current?.focus();
+      listRef.current?.focus({
+        preventScroll: true,
+      });
     },
     tranformKeyboardEvent: handleListKeydown,
     triggerSearch: setSearchValue,
