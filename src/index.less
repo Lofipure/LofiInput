@@ -5,6 +5,8 @@
   border-color: rgb(224 224 224);
   padding: 5px 12px;
   transition: border-color 100ms ease;
+  background-color: #fff;
+  overflow: auto;
 
   &:empty::after {
     content: attr(data-placeholder);
@@ -18,6 +20,10 @@
 
   &:focus-visible {
     box-shadow: rgb(51 138 255 / 20%) 0 0 0 2px;
+  }
+
+  & > span:last-child[data-is-space='1'] {
+    padding-right: 4px;
   }
 }
 

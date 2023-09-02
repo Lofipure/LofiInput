@@ -1,4 +1,5 @@
-import LofiInput, { IMentionAtom } from 'LofiInput';
+import LofiInput from 'LofiInput';
+import { IMentionAtom } from 'LofiInput/types';
 import React, { ElementRef, useRef } from 'react';
 import './index.less';
 

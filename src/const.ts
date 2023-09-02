@@ -9,6 +9,8 @@ export enum Key {
   Alt = 'Alt',
   Ctrl = 'Control',
   Meta = 'Meta',
+  Backspace = 'Backspace',
+  Delete = 'Delete',
 }
 
 export enum NodeType {
@@ -31,3 +33,6 @@ export const directionKeys = [Key.Down, Key.Up, Key.Left, Key.Right];
 export const disabledKeys = [Key.Enter];
 
 export const VALUE_WRAP_CLASS = 'value-wrap';
+export const DEP_SPAN_CLASS = 'render-dep-ele';
+
+export const CLIPBOARD_KEY = 'EXPRESSION_CLIPBOARD_KEY';
