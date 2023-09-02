@@ -1,10 +1,9 @@
-.editable-tag {
+.edit-tag {
   padding: 0 2px;
   margin: 0 2px;
   border-radius: 4px;
   cursor: pointer;
   display: inline-block;
-  user-select: auto;
   user-select: auto;
 
   &:empty::after {
@@ -14,5 +13,12 @@
 
   &[contenteditable='true'] {
     outline: transparent !important;
+  }
+}
+
+.edit-tag-show-mention {
+  &::before {
+    content: attr(data-mention);
+    padding-right: 4px;
   }
 }

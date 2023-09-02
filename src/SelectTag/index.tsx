@@ -1,18 +1,18 @@
 import classNames from 'classnames';
-import React, { useEffect, useRef, useState, type FC } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { render } from 'react-dom';
 import { Key, VALUE_WRAP_CLASS } from '../const';
-import LofiSelectPanel, { ILofiSelectPanelHandler } from '../LofiSelectPanel';
-import { IMentionDataSourceAtom, ISelectableTagProps } from '../types';
+import SelectPanel, { ISelectPanelHandler } from '../SelectPanel';
+import { IMentionDataSourceAtom, ITagProps } from '../types';
 import { setSelectionAfterTarget } from '../utils';
 import './index.less';
 
-const SelectableTag: FC<ISelectableTagProps> = ({
+const SelectTag: FC<ITagProps> = ({
   mentionAtom,
-  lofiInputEle,
-  onSelect,
-  setLofiInputEditable,
+  inputEle,
   defaultValue,
+  onChange,
+  setExpressionEditable,
 }) => {
   const {
     classname,
@@ -25,9 +25,10 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     empty,
     showMentionCharBefore,
   } = mentionAtom;
+
   const tagContainerRef = useRef<HTMLSpanElement>(null);
   const dropdownRef = useRef<HTMLDivElement>();
-  const selectPanelRef = useRef<ILofiSelectPanelHandler>(null);
+  const selectPanelRef = useRef<ISelectPanelHandler>(null);
   const [curSelect, setCurSelect] = useState<
     IMentionDataSourceAtom | undefined
   >(defaultValue);
@@ -38,7 +39,7 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     if (!tagEle) return;
 
     if (searchable) {
-      setLofiInputEditable?.(false);
+      setExpressionEditable?.(false);
       setTagEditable(true);
 
       const selectionObj = window.getSelection();
@@ -49,14 +50,14 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     }
 
     setTimeout(() => {
-      if (searchable) tagEle?.focus();
+      tagEle.focus();
     });
   };
 
   const resetSelectionToInput = () => {
-    const tagEle = tagContainerRef.current;
+    const tagEle = tagContainerRef?.current;
     if (tagEle) {
-      setSelectionAfterTarget(tagEle, lofiInputEle);
+      setSelectionAfterTarget(tagEle, inputEle);
     }
   };
 
@@ -70,19 +71,16 @@ const SelectableTag: FC<ISelectableTagProps> = ({
   const handleKeydown = (ev: KeyboardEvent) => {
     const tagEle = tagContainerRef.current;
     if (!tagEle) return;
-    // space 的话默认不搜索，结束～
     if ([Key.Space].includes(ev.code as any)) {
       ev.preventDefault();
-
-      setLofiInputEditable?.(true);
-      setTagEditable(false);
-
       closeDropdown();
+
+      setExpressionEditable?.(true);
+      setTagEditable(false);
 
       resetSelectionToInput();
       return;
     }
-    // 这几个键要透传给 SelectPanel
     if ([Key.Up, Key.Down, Key.Enter].includes(ev.code as any)) {
       ev.preventDefault();
       selectPanelRef.current?.tranformKeyboardEvent(ev);
@@ -94,7 +92,7 @@ const SelectableTag: FC<ISelectableTagProps> = ({
       }
       return;
     }
-    // 否则就触发搜索
+
     setTimeout(() => {
       const searchValue = tagEle.innerText;
       selectPanelRef.current?.triggerSearch(searchValue);
@@ -106,15 +104,15 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     closeDropdown();
 
     if (searchable) {
-      setLofiInputEditable?.(true);
+      setExpressionEditable?.(true);
       setTagEditable(false);
     }
 
     setTimeout(() => {
-      onSelect?.();
+      onChange?.();
     });
-    selectPanelRef.current?.setPanelValue(item.value);
 
+    selectPanelRef.current?.setPanelValue(item.value);
     resetSelectionToInput();
   };
 
@@ -123,12 +121,12 @@ const SelectableTag: FC<ISelectableTagProps> = ({
     if (!tagEle || !mentionAtom?.dataSource) return;
 
     if (!dropdownRef.current) {
-      const dropDownContent = document.createElement('div');
-      dropDownContent.setAttribute('class', 'lofi-dropdown-container');
-      dropdownRef.current = dropDownContent;
+      const dropdownContent = document.createElement('div');
+      dropdownContent.setAttribute('class', 'dropdown-container');
+      dropdownRef.current = dropdownContent;
 
       render(
-        <LofiSelectPanel
+        <SelectPanel
           focusedItemClassname={focusedItemClassname}
           wrapClassname={panelWrapClassname}
           ref={selectPanelRef}
@@ -140,20 +138,20 @@ const SelectableTag: FC<ISelectableTagProps> = ({
       );
     }
 
-    const { top: inputTop, left: inputLeft } =
-      lofiInputEle.getBoundingClientRect();
+    const { top: inputTop, left: inputLeft } = inputEle.getBoundingClientRect();
+
     const {
       left: tagLeft,
-      top: tagTop,
       height: tagHeight,
+      top: tagTop,
     } = tagEle.getBoundingClientRect();
-    dropdownRef.current.style.top = tagTop - inputTop + tagHeight + 'px';
+    dropdownRef.current.style.top = tagTop - inputTop + tagHeight + 6 + 'px';
     dropdownRef.current.style.left = tagLeft - inputLeft + 'px';
 
     dropdownRef.current.style.display = 'unset';
     selectPanelRef.current?.setPanelVisible(true);
 
-    lofiInputEle?.parentNode?.appendChild(dropdownRef.current);
+    inputEle?.parentNode?.appendChild(dropdownRef.current);
   };
 
   const handleOutofTag = (ev: MouseEvent) => {
@@ -165,6 +163,9 @@ const SelectableTag: FC<ISelectableTagProps> = ({
       !path.includes(tagContainerRef.current)
     ) {
       closeDropdown();
+
+      setExpressionEditable?.(true);
+      setTagEditable(false);
     }
   };
 
@@ -205,8 +206,8 @@ const SelectableTag: FC<ISelectableTagProps> = ({
   return (
     <span
       ref={tagContainerRef}
-      className={classNames('selectable-tag', VALUE_WRAP_CLASS, classname, {
-        'selectable-tag-show-mention': showMentionCharBefore,
+      className={classNames('select-tag', VALUE_WRAP_CLASS, classname, {
+        'select-tag-show-mention': showMentionCharBefore,
       })}
       contentEditable={tagEditable}
       data-mention={mentionChar}
@@ -219,4 +220,4 @@ const SelectableTag: FC<ISelectableTagProps> = ({
   );
 };
 
-export default SelectableTag;
+export default SelectTag;

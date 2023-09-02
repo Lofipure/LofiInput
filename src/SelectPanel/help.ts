@@ -25,3 +25,12 @@ export const findNextOption = (
   }
   return nextOption;
 };
+
+export const isOverflow = (child: Element) => {
+  const childRect = child.getBoundingClientRect();
+  const parentRect = child.parentElement?.getBoundingClientRect();
+  return (
+    childRect.top < (parentRect?.top ?? 0) ||
+    childRect.bottom > (parentRect?.bottom ?? 0)
+  );
+};

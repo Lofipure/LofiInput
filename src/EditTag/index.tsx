@@ -1,17 +1,18 @@
 import classNames from 'classnames';
-import React, { useEffect, useRef, useState, type FC } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { VALUE_WRAP_CLASS } from '../const';
-import { IEditableTagProps } from '../types';
+import { ITagProps } from '../types';
 import { setSelectionAfterTarget } from '../utils';
 import './index.less';
 
-const EditableTag: FC<IEditableTagProps> = ({
+const EditTag: FC<ITagProps> = ({
   mentionAtom,
-  lofiInputEle,
+  inputEle,
   defaultValue,
-  setLofiInputEditable,
+  onChange,
+  setExpressionEditable,
 }) => {
-  const { classname, placeholder } = mentionAtom;
+  const { classname, placeholder, showMentionCharBefore } = mentionAtom;
   const [editable, setEditable] = useState<boolean>(false);
   const [value, setValue] = useState<string | undefined>(defaultValue?.value);
   const tagContainerRef = useRef<HTMLDivElement>(null);
@@ -20,18 +21,17 @@ const EditableTag: FC<IEditableTagProps> = ({
     const tagEle = tagContainerRef.current;
     if (!tagEle) return;
 
-    setLofiInputEditable?.(false);
+    setExpressionEditable?.(false);
     setEditable(true);
 
-    // selection 选择当前 tag作为锚点
     const selectionObj = window.getSelection();
     selectionObj?.removeAllRanges();
     const rangeObj = document.createRange();
-    rangeObj?.selectNodeContents(tagEle);
+    rangeObj.selectNodeContents(tagEle);
     selectionObj?.addRange(rangeObj);
 
     setTimeout(() => {
-      tagEle?.focus();
+      tagEle.focus();
     });
   };
 
@@ -39,12 +39,25 @@ const EditableTag: FC<IEditableTagProps> = ({
     setCurTagEditable();
   };
 
+  const setCurInnerTextAsValue = (resetToInput: boolean) => {
+    if (!tagContainerRef.current) return;
+    setExpressionEditable?.(true);
+    setEditable(false);
+
+    setValue(tagContainerRef.current?.innerText);
+
+    if (resetToInput) {
+      onChange?.();
+      setSelectionAfterTarget(tagContainerRef.current, inputEle);
+    }
+  };
+
   const handleOutofTag = (ev: MouseEvent) => {
     if (!tagContainerRef.current) return;
     const path = ev.composedPath();
+
     if (!path.includes(tagContainerRef.current)) {
-      setLofiInputEditable?.(true);
-      setEditable(false);
+      setCurInnerTextAsValue(false);
     }
   };
 
@@ -52,15 +65,7 @@ const EditableTag: FC<IEditableTagProps> = ({
     const tagEle = tagContainerRef.current;
     if (!tagEle) return;
     if (['Enter', 'Space'].includes(ev.code)) {
-      ev.preventDefault();
-
-      setLofiInputEditable?.(true);
-      setEditable(false);
-
-      setValue(tagContainerRef.current?.innerText);
-
-      setSelectionAfterTarget(tagEle, lofiInputEle);
-      return;
+      setCurInnerTextAsValue(true);
     }
   };
 
@@ -78,7 +83,9 @@ const EditableTag: FC<IEditableTagProps> = ({
 
   return (
     <span
-      className={classNames('editable-tag', VALUE_WRAP_CLASS, classname)}
+      className={classNames('edit-tag', VALUE_WRAP_CLASS, classname, {
+        'edit-tag-show-mention': showMentionCharBefore,
+      })}
       ref={tagContainerRef}
       contentEditable={editable}
       data-placeholder={placeholder}
@@ -90,4 +97,4 @@ const EditableTag: FC<IEditableTagProps> = ({
   );
 };
 
-export default EditableTag;
+export default EditTag;

@@ -19,30 +19,8 @@ export type LofiInputValue = Array<{
   value: string;
   isText: boolean;
   mention?: string;
-  positionPin?: IPinPosition;
+  offset?: number;
 }>;
-
-export interface IPinPosition {
-  offset: number;
-  node?: Node;
-}
-
-export interface ILofiInputProps {
-  wrapClassname?: string;
-  classname?: string;
-  placeholder?: string;
-  mentionList: Array<IMentionAtom>;
-  onChange?: (value: LofiInputValue) => void;
-  onBlur?: (positionPin: IPinPosition) => void;
-}
-
-export interface ILofiInputHandler {
-  getValue: () => LofiInputValue;
-  setValue: (value: LofiInputValue) => void;
-  focusAt: (positionPin?: IPinPosition) => void;
-  insertMentionTag: (value: IMentionInsertAtom) => boolean;
-  insertTextNode: (value: string) => void;
-}
 
 export interface IMentionAtom {
   mentionChar: string;
@@ -62,22 +40,46 @@ export interface IMentionAtom {
   showMentionCharBefore?: boolean;
 }
 
-export interface IEditableTagProps {
-  lofiInputEle: HTMLDivElement;
-  mentionAtom: IMentionAtom;
-  defaultValue?: IMentionInsertAtom;
-  setLofiInputEditable?: (editable: boolean) => void;
+export interface ILofiInputProps {
+  wrapClassname?: string;
+  classname?: string;
+  placeholder?: string;
+  mentionList: Array<IMentionAtom>;
+  disabledCharList?: Array<string | RegExp>;
+  onChange?: (value: LofiInputValue) => void;
+  onBlur?: (lastOffset: number) => void;
 }
 
-export interface ISelectableTagProps {
-  lofiInputEle: HTMLDivElement;
+export interface ILofiInputHandler {
+  getValue: () => LofiInputValue;
+  setValue: (value: LofiInputValue) => void;
+  focusAt: (offset: number) => void;
+  insertMentionTag: (value: IMentionInsertAtom) => void;
+  insertTextNode: (value: string) => void;
+}
+
+export interface ITagProps {
+  inputEle: HTMLDivElement;
   mentionAtom: IMentionAtom;
   defaultValue?: IMentionInsertAtom;
   setLofiInputEditable?: (editable: boolean) => void;
-  onSelect?: () => void;
+  onChange?: () => void;
 }
 
 export interface IDisplayAtom {
   label: ReactNode;
   value: string;
+}
+
+export interface IRenderTagParam {
+  inputEle: HTMLDivElement;
+  mention: IMentionAtom;
+  defaultValue?: IMentionInsertAtom;
+  setLofiInputEditable?: (editable: boolean) => void;
+  onChange?: () => void;
+}
+
+export interface IValidateAtom {
+  value: string;
+  isCalcAtom?: boolean; // 是不是可计算的最小原子
 }
